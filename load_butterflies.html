@@ -25,45 +25,137 @@
 				.attr("width", width)
 				.attr("height", height);
 
-        function creaTesta(i,x,y,raggio_testa,testa) {
+        function creaTesta(gruppo,i,x,y,raggio_testa,testa) {
 
-            var t = svg.append("circle")
+            var t = gruppo.append("circle")
             .attr("id", "c"+i)
             .attr("cx", x)
             .attr("cy", y)
             .attr("r", raggio_testa)
             .on("click", function(ev){
-
                 var new_y = testa;
+                var y = parseInt(gruppo.select("#c"+i).attr("cy"));
+                var translat = new_y -y;
                 var new_r = 20; /////////////////CAMBIARE IN Y
-                svg.select("#c"+i).transition()
+            
+                gruppo.select("#c"+i).transition()
                     .ease(d3.easeLinear)
                     .duration(2000)
-                    .attr("r",new_r)
-                    .attr("cy",new_y);
+                    .attr("r",new_r);
 
-                aggiornaAntenne(i, new_y, new_r);
-                aggiornaCorpo(i,new_y, new_r);
-                aggiornaAli(i,new_y, new_r);
-
+                gruppo.transition()
+                    .ease(d3.easeLinear)
+                    .duration(2000) 
+                    .attr("transform", "translate(0 "+ translat +")")
+                
             })
             .on("contextmenu", function(ev){
-                console.log("MENU");
+                var new_x = testa;
+                var x = parseInt(gruppo.select("#c"+i).attr("cx"));
+                var translat = new_x -x;
+                var new_r = 20; /////////////////CAMBIARE IN X
+
+                console.log(translat)
+                gruppo.select("#c"+i).transition()
+                    .ease(d3.easeLinear)
+                    .duration(2000)
+                    .attr("r",new_r);
+
+
+                gruppo.transition()
+                    .ease(d3.easeLinear)
+                    .duration(2000) 
+                    .attr("transform", "translate(" + translat +" 0)")
+                
+                    
             });
         }
 
-        function aggiornaTesta(i,new_y){
-            svg.select("#c"+i).transition()
+        function clickSinistroAntenne(gruppo,i,y,antenne) {
+            var new_y = antenne;
+            var new_ant = 20; /////////////////CAMBIARE IN Y
+            var translat = new_y -y;
+
+            gruppo.transition()
                     .ease(d3.easeLinear)
-                    .duration(2000)
-                    .attr("cy",new_y);
+                    .duration(2000) 
+                    .attr("transform", "translate(0 "+ translat +")");
+            
+            var x = parseInt(gruppo.select("#c"+i).attr("cx"));
+            var y = parseInt(gruppo.select("#c"+i).attr("cy"));
+            var raggio_testa = parseInt(gruppo.select("#c"+i).attr("r"));
+         
+
+            x2 = x-(raggio_testa/2);
+            y2 = new_y-raggio_testa+2;
+
+
+            gruppo.select("#a0"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x2)
+                .attr("x2", x2-new_ant)
+                .attr("y1", y2-translat)
+                .attr("y2", y2-new_ant-translat);
+
+            x1 = x + (raggio_testa/2);
+            y1 = new_y-raggio_testa+2;
+
+            gruppo.select("#a1"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x1)
+                .attr("x2", x1+new_ant)
+                .attr("y1", y1-translat)
+                .attr("y2", y1-new_ant-translat);
+
         }
 
-        function creaAntenne(i,x,y,raggio_testa,antenne){
+        function clickDestroAntenne(gruppo,i,x,antenne) {
+            var new_x = antenne;
+            var new_ant = 20; /////////////////CAMBIARE IN X
+            var translat = new_x -x;
+
+            gruppo.transition()
+                    .ease(d3.easeLinear)
+                    .duration(2000) 
+                    .attr("transform", "translate(" + translat +" 0)");
+            
+            var x = parseInt(gruppo.select("#c"+i).attr("cx"));
+            var y = parseInt(gruppo.select("#c"+i).attr("cy"));
+            var raggio_testa = parseInt(gruppo.select("#c"+i).attr("r"));
+         
+
+            x2 = new_x-(raggio_testa/2);
+            y2 = y-raggio_testa+2;
+
+
+            gruppo.select("#a0"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x2-translat)
+                .attr("x2", x2-new_ant-translat)
+                .attr("y1", y2)
+                .attr("y2", y2-new_ant);
+
+            x1 = new_x + (raggio_testa/2);
+            y1 = y-raggio_testa+2;
+
+            gruppo.select("#a1"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x1-translat)
+                .attr("x2", x1+new_ant-translat)
+                .attr("y1", y1)
+                .attr("y2", y1-new_ant);
+
+        }
+
+        function creaAntenne(gruppo,i,x,y,raggio_testa,antenne){
             x2 = x-(raggio_testa/2);
             y2 = y-raggio_testa+2;
 
-            svg.append("line")
+            gruppo.append("line")
                 .attr("id", "a0"+i)
                 .attr("x1", x2)
                 .attr("x2", x2-antenne)
@@ -72,41 +164,16 @@
                 .attr("stroke", "black")
                 .attr("stroke-width",3)
                 .on("click", function(ev){
-
-                    var new_y = antenne;
-                    var new_ant = 20; /////////////////CAMBIARE IN Y
-                    var r = parseInt(svg.select("#c"+i).attr("r"));
-
-                    aggiornaTesta(i, new_y);
-                    y2 = new_y-raggio_testa+2;
-                    x2 = x-(raggio_testa/2);
-
-                    svg.select("#a0"+i).transition()
-                        .ease(d3.easeLinear)
-                        .duration(2000)
-                        .attr("x1", x2)
-                        .attr("x2", x2-new_ant)
-                        .attr("y1", y2)
-                        .attr("y2", y2-new_ant)
-
-                    x1 = x + (raggio_testa/2);
-                    y1 = new_y-raggio_testa+2;
-                    svg.select("#a1"+i).transition()
-                        .ease(d3.easeLinear)
-                        .duration(2000)
-                        .attr("x1", x1)
-                        .attr("x2", x1+new_ant)
-                        .attr("y1", y1)
-                        .attr("y2", y1-new_ant)
-
-                    aggiornaCorpo(i,new_y, 0);
-                    aggiornaAli(i,new_y, r);
+                    clickSinistroAntenne(gruppo,i,y,antenne);
+                })
+                .on("contextmenu", function(ev){
+                    clickDestroAntenne(gruppo,i,x,antenne);
                 });
 
             x1 = x + (raggio_testa/2);
             y1 = y-raggio_testa+2;
 
-            svg.append("line")
+            gruppo.append("line")
                 .attr("id", "a1"+i)
                 .attr("x1", x1)
                 .attr("x2", x1+antenne)
@@ -115,40 +182,15 @@
                 .attr("stroke", "black")
                 .attr("stroke-width",3)
                 .on("click", function(ev){
-
-                    var new_y = antenne;
-                    var new_ant = 20; /////////////////CAMBIARE IN Y
-                    var r = parseInt(svg.select("#c"+i).attr("r"));
-
-                    aggiornaTesta(i, new_y);
-                    y2 = new_y-raggio_testa+2;
-                    x2 = x-(raggio_testa/2);
-
-                    svg.select("#a0"+i).transition()
-                        .ease(d3.easeLinear)
-                        .duration(2000)
-                        .attr("x1", x2)
-                        .attr("x2", x2-new_ant)
-                        .attr("y1", y2)
-                        .attr("y2", y2-new_ant)
-
-                    x1 = x + (raggio_testa/2);
-                    y1 = new_y-raggio_testa+2;
-                    svg.select("#a1"+i).transition()
-                        .ease(d3.easeLinear)
-                        .duration(2000)
-                        .attr("x1", x1)
-                        .attr("x2", x1+new_ant)
-                        .attr("y1", y1)
-                        .attr("y2", y1-new_ant)
-
-                    aggiornaCorpo(i,new_y, 0);
-                    aggiornaAli(i,new_y, r);
+                    clickSinistroAntenne(gruppo,i,y,antenne);
+                })
+                .on("contextmenu", function(ev){
+                    clickDestroAntenne(gruppo,i,x,antenne);
                 });
         }
 
-        function creaCorpo(i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
-            svg.append("ellipse")
+        function creaCorpo(gruppo,i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
+            gruppo.append("ellipse")
                 .attr("id", "cor"+i)
                 .attr("cx", cx)
                 .attr("cy", cy)
@@ -157,82 +199,30 @@
                 .on("click", function(ev){
 
                     var new_y = corpo;
-                    var new_corpo = 60; /////////////////CAMBIARE IN Y
-                    var r = parseInt(svg.select("#c"+i).attr("r"));
+                    var new_corpo = 20; /////////////////CAMBIARE IN Y
+                    var y = parseInt(gruppo.select("#c"+i).attr("cy"));
+                    var translat = new_y -y;
 
-                    ry = new_corpo/2;
-                    rx = ry/2;
-                    cy = new_y+raggio_testa+ry;
-                    cx = x;
+                    gruppo.transition()
+                        .ease(d3.easeLinear)
+                        .duration(2000) 
+                        .attr("transform", "translate(0 "+ translat +")")
 
-                    aggiornaTesta(i, new_y);
+                        
+                    ry_corpo = new_corpo/2;
+                    rx_corpo = ry_corpo/2;
 
-                    svg.select("#cor"+i).transition()
+                    gruppo.select("#cor"+i).transition()
                         .ease(d3.easeLinear)
                         .duration(2000)
-                        .attr("cx", cx)
-                        .attr("cy", cy)
-                        .attr("rx", rx)
-                        .attr("ry", ry);
-
-                    aggiornaAntenne(i, new_y, r);
-                    aggiornaAli(i,new_y, r);
+                        .attr("rx",rx_corpo)
+                        .attr("ry",ry_corpo);
 
                 });
 
         }
 
-        function aggiornaAli(i,new_y, new_r){
-            var al0 = d3.select("#al0"+i).attr("points").split(" ");
-            var y1 = parseInt(al0[0].split(",")[1]);
-
-            var corp = d3.select("#cor"+i).attr("ry");
-
-            var tm = new_y-y1+new_r+(corp/2);
-            svg.select("#al0"+i).transition()
-                .ease(d3.easeLinear)
-                .duration(2000)
-                .attr("transform", "translate(0 "+tm.toString()+")");
-
-            svg.select("#al1"+i).transition()
-                .ease(d3.easeLinear)
-                .duration(2000)
-                .attr("transform", "translate(0 "+tm.toString()+")");
-
-        }
-
-        function aggiornaCorpo(i,new_y,new_r) {
-            var y_cor = d3.select("#c"+i).attr("cy");
-            var cor = new_y - y_cor + new_r;
-
-            svg.select("#cor"+i).transition()
-                .ease(d3.easeLinear)
-                .duration(2000)
-                .attr("transform", "translate(0 "+cor.toString()+")");
-        }
-
-        function aggiornaAntenne(i,new_y,new_r) {
-
-            var y_ant = d3.select("#a0"+i).attr("y1");
-            var asd = new_y - y_ant;
-            asd = asd - new_r+2;
-            svg.select("#a0"+i).transition()
-                .ease(d3.easeLinear)
-                .duration(2000)
-                .attr("transform", "translate(0 "+asd.toString()+")");
-
-
-            var y_ant = d3.select("#a1"+i).attr("y1");
-            var asd = new_y - y_ant;
-            asd = asd - new_r+2;
-            svg.select("#a1"+i).transition()
-                .ease(d3.easeLinear)
-                .duration(2000)
-                .attr("transform", "translate(0 "+asd.toString()+")");
-
-        }
-
-        function creaAli(i,cx,cy,rx,ry,ali){
+        function creaAli(gruppo,i,cx,cy,rx,ry,ali){
             x1 = cx + rx-2;
             y1 = cy - (ry/2);
             p1 = x1.toString() + "," + y1.toString();
@@ -249,9 +239,16 @@
             y3 = y4 +ali;
             p3 = x3.toString() + "," + y3.toString();
             punti = p1 + " " + p2 + " " + p3+ " " + p4;
-            svg.append("polygon")
+            gruppo.append("polygon")
                 .attr("id", "al0"+i)
                 .attr("points", punti)
+                .on("click", function(ev){
+                    clickSinistroAli(gruppo,i,y);
+                })
+                .on("contextmenu", function(ev){
+                    clickDestroAli(gruppo,i,x);
+                });
+                
 
 
             x1 = cx - rx+2;
@@ -270,12 +267,25 @@
             y3 = y4 +ali;
             p3 = x3.toString() + "," + y3.toString();
             punti = p1 + " " + p2 + " " + p3+ " " + p4;
-            svg.append("polygon")
+            gruppo.append("polygon")
                 .attr("id", "al1"+i)
                 .attr("points", punti)
+                .on("click", function(ev){
+                    clickSinistroAli(gruppo,i,y);
+                })
+                .on("contextmenu", function(ev){
+                    clickDestroAli(gruppo,i,x);
+                });
 
         }
 
+        function clickSinistroAli(gruppo,i,y) {
+
+        }
+
+        function clickDestroAli(gruppo,i,x){
+
+        }
 
         //FILE DA JSON
         d3.json(URL_file, function(data) {
@@ -295,10 +305,11 @@
                 var cy_corpo = y+raggio_testa+ry_corpo;
                 var cx_corpo = x;
 
-                creaTesta(i,x,y,raggio_testa,data[i].testa);
-                creaAntenne(i,x,y,raggio_testa,l_antenne);
-                creaCorpo(i,x,y,raggio_testa,rx_corpo,ry_corpo,cx_corpo,cy_corpo,corpo)
-                creaAli(i,cx_corpo,cy_corpo,rx_corpo,ry_corpo,ali)
+                var gruppo = svg.append("g")
+                creaTesta(gruppo,i,x,y,raggio_testa,data[i].testa);
+                creaAntenne(gruppo,i,x,y,raggio_testa,l_antenne);
+                creaCorpo(gruppo,i,x,y,raggio_testa,rx_corpo,ry_corpo,cx_corpo,cy_corpo,corpo)
+                creaAli(gruppo,i,cx_corpo,cy_corpo,rx_corpo,ry_corpo,ali)
             }
         });
 
