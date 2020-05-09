@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+	<script>
+		var width = 1000;
+		var height = 1000;
+
+
+        var corpo = 100;  ///DIAMETRO Y DEL CORPO
+        var testa = 50;  ///DIAMETRO DELLA TESTA
+        var antenne = 80; ///LUNGHEZZA DELLE ANTENNE
+        var ali = 70; ///ALTEZZA POLIGONO ALI
+        var x =400; ///CENTRO X DELLA TESTA
+        var y = 400; ///CENTRO Y DELLA TESTA
+
+
+        var raggio_testa =testa/2;
+
+		//Create SVG element
+		var svg = d3.select("body")
+				.append("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+		//TESTA
+        svg.append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", raggio_testa)
+
+
+        //ANTENNE
+        x1 = x+(raggio_testa/2);
+        y1 = y-raggio_testa+2;
+
+        svg.append("line")
+            .attr("x1", x1)
+            .attr("x2", x1+antenne)
+            .attr("y1", y1)
+            .attr("y2", y1-antenne)
+            .attr("stroke", "black")
+            .attr("stroke-width",3)
+
+        x1 = x-(raggio_testa/2);
+        y1 = y-raggio_testa+2;
+        
+        svg.append("line")
+            .attr("x1", x1)
+            .attr("x2", x1-antenne)
+            .attr("y1", y1)
+            .attr("y2", y1-antenne)
+            .attr("stroke", "black")
+            .attr("stroke-width",3)
+
+
+
+        //CORPO
+        ry = corpo/2;
+        rx = ry/2; 
+        cy = y+raggio_testa+ry;
+        cx = x;
+        svg.append("ellipse")
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("rx", rx)
+            .attr("ry", ry)
+
+        
+
+        //ALI
+        x1 = cx + rx-2;
+        y1 = cy - (ry/2);
+        p1 = x1.toString() + "," + y1.toString();
+        
+        x2 = x1 + ali;
+        y2 = y1 -ali;
+        p2 = x2.toString() + "," + y2.toString();
+        
+        x4 = cx + rx-2;
+        y4 = cy + (ry/2);
+        p4 = x4.toString() + "," + y4.toString();
+        
+        x3 = x1 +ali;
+        y3 = y4 +ali;
+        p3 = x3.toString() + "," + y3.toString();
+        punti = p1 + " " + p2 + " " + p3+ " " + p4;
+        svg.append("polygon")
+            .attr("points", punti)
+
+
+
+
+        x1 = cx - rx+2;
+        y1 = cy - (ry/2);
+        p1 = x1.toString() + "," + y1.toString();
+        
+        x2 = x1 - ali;
+        y2 = y1 -ali;
+        p2 = x2.toString() + "," + y2.toString();
+        
+        x4 = cx - rx+2;
+        y4 = cy + (ry/2);
+        p4 = x4.toString() + "," + y4.toString();
+        
+        x3 = x1 -ali;
+        y3 = y4 +ali;
+        p3 = x3.toString() + "," + y3.toString();
+        punti = p1 + " " + p2 + " " + p3+ " " + p4;
+        svg.append("polygon")
+            .attr("points", punti)
+
+
+	</script>
+</body>
+</html>

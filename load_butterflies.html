@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+	<script>
+		var width = 2000;
+		var height = 2000;
+
+        var URL_file = "butterflydata.json"
+
+        // var corpo ;  ///DIAMETRO Y DEL CORPO
+        // var testa ;  ///DIAMETRO DELLA TESTA
+        // var antenne ; ///LUNGHEZZA DELLE ANTENNE
+        // var ali ; ///ALTEZZA POLIGONO ALI
+        // var x ; ///CENTRO X DELLA TESTA
+        // var y ; ///CENTRO Y DELLA TESTA
+
+
+
+        //Create SVG element
+		var svg = d3.select("body")
+				.append("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+        function creaTesta(i,x,y,raggio_testa,testa) {
+
+            var t = svg.append("circle")
+            .attr("id", "c"+i)
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", raggio_testa)
+            .on("click", function(ev){
+
+                var new_y = testa;
+                var new_r = 20; /////////////////CAMBIARE IN Y
+                svg.select("#c"+i).transition()
+                    .ease(d3.easeLinear)
+                    .duration(2000)
+                    .attr("r",new_r)
+                    .attr("cy",new_y);
+
+                aggiornaAntenne(i, new_y, new_r);
+                aggiornaCorpo(i,new_y, new_r);
+                aggiornaAli(i,new_y, new_r);
+
+            })
+            .on("contextmenu", function(ev){
+                console.log("MENU");
+            });
+        }
+
+        function aggiornaTesta(i,new_y){
+            svg.select("#c"+i).transition()
+                    .ease(d3.easeLinear)
+                    .duration(2000)
+                    .attr("cy",new_y);
+        }
+
+        function creaAntenne(i,x,y,raggio_testa,antenne){
+            x2 = x-(raggio_testa/2);
+            y2 = y-raggio_testa+2;
+
+            svg.append("line")
+                .attr("id", "a0"+i)
+                .attr("x1", x2)
+                .attr("x2", x2-antenne)
+                .attr("y1", y2)
+                .attr("y2", y2-antenne)
+                .attr("stroke", "black")
+                .attr("stroke-width",3)
+                .on("click", function(ev){
+
+                    var new_y = antenne;
+                    var new_ant = 20; /////////////////CAMBIARE IN Y
+                    var r = parseInt(svg.select("#c"+i).attr("r"));
+
+                    aggiornaTesta(i, new_y);
+                    y2 = new_y-raggio_testa+2;
+                    x2 = x-(raggio_testa/2);
+
+                    svg.select("#a0"+i).transition()
+                        .ease(d3.easeLinear)
+                        .duration(2000)
+                        .attr("x1", x2)
+                        .attr("x2", x2-new_ant)
+                        .attr("y1", y2)
+                        .attr("y2", y2-new_ant)
+
+                    x1 = x + (raggio_testa/2);
+                    y1 = new_y-raggio_testa+2;
+                    svg.select("#a1"+i).transition()
+                        .ease(d3.easeLinear)
+                        .duration(2000)
+                        .attr("x1", x1)
+                        .attr("x2", x1+new_ant)
+                        .attr("y1", y1)
+                        .attr("y2", y1-new_ant)
+
+                    aggiornaCorpo(i,new_y, 0);
+                    aggiornaAli(i,new_y, r);
+                });
+
+            x1 = x + (raggio_testa/2);
+            y1 = y-raggio_testa+2;
+
+            svg.append("line")
+                .attr("id", "a1"+i)
+                .attr("x1", x1)
+                .attr("x2", x1+antenne)
+                .attr("y1", y1)
+                .attr("y2", y1-antenne)
+                .attr("stroke", "black")
+                .attr("stroke-width",3)
+                .on("click", function(ev){
+
+                    var new_y = antenne;
+                    var new_ant = 20; /////////////////CAMBIARE IN Y
+                    var r = parseInt(svg.select("#c"+i).attr("r"));
+
+                    aggiornaTesta(i, new_y);
+                    y2 = new_y-raggio_testa+2;
+                    x2 = x-(raggio_testa/2);
+
+                    svg.select("#a0"+i).transition()
+                        .ease(d3.easeLinear)
+                        .duration(2000)
+                        .attr("x1", x2)
+                        .attr("x2", x2-new_ant)
+                        .attr("y1", y2)
+                        .attr("y2", y2-new_ant)
+
+                    x1 = x + (raggio_testa/2);
+                    y1 = new_y-raggio_testa+2;
+                    svg.select("#a1"+i).transition()
+                        .ease(d3.easeLinear)
+                        .duration(2000)
+                        .attr("x1", x1)
+                        .attr("x2", x1+new_ant)
+                        .attr("y1", y1)
+                        .attr("y2", y1-new_ant)
+
+                    aggiornaCorpo(i,new_y, 0);
+                    aggiornaAli(i,new_y, r);
+                });
+        }
+
+        function creaCorpo(i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
+            svg.append("ellipse")
+                .attr("id", "cor"+i)
+                .attr("cx", cx)
+                .attr("cy", cy)
+                .attr("rx", rx)
+                .attr("ry", ry)
+                .on("click", function(ev){
+
+                    var new_y = corpo;
+                    var new_corpo = 60; /////////////////CAMBIARE IN Y
+                    var r = parseInt(svg.select("#c"+i).attr("r"));
+
+                    ry = new_corpo/2;
+                    rx = ry/2;
+                    cy = new_y+raggio_testa+ry;
+                    cx = x;
+
+                    aggiornaTesta(i, new_y);
+
+                    svg.select("#cor"+i).transition()
+                        .ease(d3.easeLinear)
+                        .duration(2000)
+                        .attr("cx", cx)
+                        .attr("cy", cy)
+                        .attr("rx", rx)
+                        .attr("ry", ry);
+
+                    aggiornaAntenne(i, new_y, r);
+                    aggiornaAli(i,new_y, r);
+
+                });
+
+        }
+
+        function aggiornaAli(i,new_y, new_r){
+            var al0 = d3.select("#al0"+i).attr("points").split(" ");
+            var y1 = parseInt(al0[0].split(",")[1]);
+
+            var corp = d3.select("#cor"+i).attr("ry");
+
+            var tm = new_y-y1+new_r+(corp/2);
+            svg.select("#al0"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("transform", "translate(0 "+tm.toString()+")");
+
+            svg.select("#al1"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("transform", "translate(0 "+tm.toString()+")");
+
+        }
+
+        function aggiornaCorpo(i,new_y,new_r) {
+            var y_cor = d3.select("#c"+i).attr("cy");
+            var cor = new_y - y_cor + new_r;
+
+            svg.select("#cor"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("transform", "translate(0 "+cor.toString()+")");
+        }
+
+        function aggiornaAntenne(i,new_y,new_r) {
+
+            var y_ant = d3.select("#a0"+i).attr("y1");
+            var asd = new_y - y_ant;
+            asd = asd - new_r+2;
+            svg.select("#a0"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("transform", "translate(0 "+asd.toString()+")");
+
+
+            var y_ant = d3.select("#a1"+i).attr("y1");
+            var asd = new_y - y_ant;
+            asd = asd - new_r+2;
+            svg.select("#a1"+i).transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("transform", "translate(0 "+asd.toString()+")");
+
+        }
+
+        function creaAli(i,cx,cy,rx,ry,ali){
+            x1 = cx + rx-2;
+            y1 = cy - (ry/2);
+            p1 = x1.toString() + "," + y1.toString();
+
+            x2 = x1 + ali;
+            y2 = y1 -ali;
+            p2 = x2.toString() + "," + y2.toString();
+
+            x4 = cx + rx-2;
+            y4 = cy + (ry/2);
+            p4 = x4.toString() + "," + y4.toString();
+
+            x3 = x1 +ali;
+            y3 = y4 +ali;
+            p3 = x3.toString() + "," + y3.toString();
+            punti = p1 + " " + p2 + " " + p3+ " " + p4;
+            svg.append("polygon")
+                .attr("id", "al0"+i)
+                .attr("points", punti)
+
+
+            x1 = cx - rx+2;
+            y1 = cy - (ry/2);
+            p1 = x1.toString() + "," + y1.toString();
+
+            x2 = x1 - ali;
+            y2 = y1 -ali;
+            p2 = x2.toString() + "," + y2.toString();
+
+            x4 = cx - rx+2;
+            y4 = cy + (ry/2);
+            p4 = x4.toString() + "," + y4.toString();
+
+            x3 = x1 -ali;
+            y3 = y4 +ali;
+            p3 = x3.toString() + "," + y3.toString();
+            punti = p1 + " " + p2 + " " + p3+ " " + p4;
+            svg.append("polygon")
+                .attr("id", "al1"+i)
+                .attr("points", punti)
+
+        }
+
+
+        //FILE DA JSON
+        d3.json(URL_file, function(data) {
+            var arr = data[0];
+            for(var i=0; i<data.length ; i++){
+
+                var raggio_testa =(data[i].testa)/2;
+                var x = data[i].x;
+                var y = data[i].y;
+                var l_antenne = data[i].antenne;
+
+                var ali = data[i].ali;
+
+                var corpo = data[i].corpo;
+                var ry_corpo = data[i].corpo/2;
+                var rx_corpo = ry_corpo/2;
+                var cy_corpo = y+raggio_testa+ry_corpo;
+                var cx_corpo = x;
+
+                creaTesta(i,x,y,raggio_testa,data[i].testa);
+                creaAntenne(i,x,y,raggio_testa,l_antenne);
+                creaCorpo(i,x,y,raggio_testa,rx_corpo,ry_corpo,cx_corpo,cy_corpo,corpo)
+                creaAli(i,cx_corpo,cy_corpo,rx_corpo,ry_corpo,ali)
+            }
+        });
+
+	</script>
+</body>
+</html>
