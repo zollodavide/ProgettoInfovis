@@ -3,18 +3,6 @@ var height = 2000;
 
 var URL_file = "butterflydata.json"
 
-//IDEA 1
-//FARE GET DELLA TRASLAZIONE CORRENTE E SOMMARLA ALLA NUOVA TRASLAZIONE
-//console.log(gruppo.attr("transform"))
-
-//IDEA 2
-//FARE UNA MAPPA CONTENTE LA TRASLAZIONE CORRENTE DI OGNI GRUPPO, CREATA ALL'INIZIO 
-//E AGGIORNATA AD OGNI TRASLAZIONE
-
-//IDEA 1.5
-//REALIZZARE SUBSTRING DA '(' A ' ' ESCLUSI PER LA X E
-//           SUBSTRING DA ' ' A ')' ESCLUSI PER LA Y
-
 var svg = d3.select("body")
         .append("svg")
         .attr("width", width)
