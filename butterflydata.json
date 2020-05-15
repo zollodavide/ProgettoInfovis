@@ -3,8 +3,8 @@
     "y": 500,
     "ali": 100,
     "antenne": 160,
-    "testa": 100,
-    "corpo": 145
+    "testa": 50,
+    "corpo": 75
 
 }
 ,
@@ -13,8 +13,8 @@
     "y": 300,
     "ali": 80,
     "antenne": 30,
-    "testa": 70,
-    "corpo": 100
+    "testa": 35,
+    "corpo": 50
 
 }
 ]

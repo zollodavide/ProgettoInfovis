@@ -16,11 +16,15 @@ function creaTesta(gruppo,i,x,y,raggio_testa,testa) {
     .attr("cy", y)
     .attr("r", raggio_testa)
     .on("click", function(ev){
-        var new_y = testa;
+        var new_y = parseInt(gruppo.select("#c"+i).attr("r"));
         var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-        var translat = new_y -y;
+
+        var { translatY, translatX } = traslazioneCorrente(gruppo);
+        
+        var translat =new_y -y ;
+        y+=translatY;
         var new_r = y; 
-    
+        
         gruppo.select("#c"+i).transition()
             .ease(d3.easeLinear)
             .duration(2000)
@@ -29,14 +33,21 @@ function creaTesta(gruppo,i,x,y,raggio_testa,testa) {
         gruppo.transition()
             .ease(d3.easeLinear)
             .duration(2000) 
-            .attr("transform", "translate(0 "+ translat +")")
+            .attr("transform", "translate(" + translatX+ " " + translat +")")
         
     })
     .on("contextmenu", function(ev){
-        var new_x = testa;
+        
+        var new_x = parseInt(gruppo.select("#c"+i).attr("r"));
         var x = parseInt(gruppo.select("#c"+i).attr("cx"));
+
+        var { translatY, translatX } = traslazioneCorrente(gruppo);
+        
         var translat = new_x -x;
+        x += translatX;
         var new_r = x; 
+        console.log(translatY)
+
 
         gruppo.select("#c"+i).transition()
             .ease(d3.easeLinear)
@@ -47,21 +58,42 @@ function creaTesta(gruppo,i,x,y,raggio_testa,testa) {
         gruppo.transition()
             .ease(d3.easeLinear)
             .duration(2000) 
-            .attr("transform", "translate(" + translat +" 0)")
+            .attr("transform", "translate(" + translat + " " + translatY+  ")")
         
             
     });
 }
 
+function traslazioneCorrente(gruppo) {
+    var translatY = 0;
+    var translatX = 0;
+    if (gruppo.attr("transform") != null) {
+        var traslazioneCorrente = gruppo.attr("transform")
+            .substr(9)
+            .replace("(", "")
+            .replace(")", "")
+            .split(",");
+        translatX = translatX + parseInt(traslazioneCorrente[0]);
+        translatY = translatY + parseInt(traslazioneCorrente[1]);
+    }
+    return { translatY, translatX };
+}
+
 function clickDestroAntenne(gruppo,i,x,antenne) {
-    var new_x = antenne;
-    var new_ant = x; 
+    
+    var new_x = Math.abs(parseInt(gruppo.select("#a0"+i).attr("x2")) - parseInt(gruppo.select("#a0"+i).attr("x1")));
+    var { translatY, translatX } = traslazioneCorrente(gruppo);
+
     var translat = new_x -x;
+    x += translatX;
+    var new_ant = x;   
+
+
     
     gruppo.transition()
             .ease(d3.easeLinear)
             .duration(2000) 
-            .attr("transform", "translate(" + translat +" 0)");
+            .attr("transform", "translate(" + translat +" " +  translatY + ")");
     
     var x = parseInt(gruppo.select("#c"+i).attr("cx"));
     var y = parseInt(gruppo.select("#c"+i).attr("cy"));
@@ -94,14 +126,17 @@ function clickDestroAntenne(gruppo,i,x,antenne) {
 }
         
 function clickSinistroAntenne(gruppo,i,y,antenne) {
-    var new_y = antenne;
-    var new_ant = y; 
+    var new_y = Math.abs(parseInt(gruppo.select("#a0"+i).attr("x2")) - parseInt(gruppo.select("#a0"+i).attr("x1")));
+    var { translatY, translatX } = traslazioneCorrente(gruppo);
+ 
     var translat = new_y -y;
+    y += translatY
+    var new_ant = y; 
 
     gruppo.transition()
             .ease(d3.easeLinear)
             .duration(2000) 
-            .attr("transform", "translate(0 "+ translat +")");
+            .attr("transform", "translate(" + translatX +  " " + translat +")");
     
     var x = parseInt(gruppo.select("#c"+i).attr("cx"));
     var y = parseInt(gruppo.select("#c"+i).attr("cy"));
@@ -169,9 +204,10 @@ function creaAntenne(gruppo,i,x,y,raggio_testa,antenne){
         .on("contextmenu", function(ev){
             clickDestroAntenne(gruppo,i,x,antenne);
         });
-    }
+}
     
 function creaCorpo(gruppo,i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
+    
     gruppo.append("ellipse")
     .attr("id", "cor"+i)
     .attr("cx", cx)
@@ -179,19 +215,21 @@ function creaCorpo(gruppo,i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
     .attr("rx", rx)
     .attr("ry", ry)
     .on("click", function(ev){
-
-        var new_y = corpo;
+        var new_y = gruppo.select("#cor"+i).attr("ry");
         var y = parseInt(gruppo.select("#c"+i).attr("cy"));
+        var { translatY, translatX } = traslazioneCorrente(gruppo);
+
+        var translat = new_y -y; 
+        y += translatY;
         var new_corpo = y;
-        var translat = new_y -y;
         
         gruppo.transition()
         .ease(d3.easeLinear)
         .duration(2000) 
-        .attr("transform", "translate(0 "+ translat +")")
+        .attr("transform", "translate(" + translatX + " "+ translat +")")
         
         
-        ry_corpo = new_corpo/2;
+        ry_corpo = new_corpo;
         rx_corpo = ry_corpo/2;
         
         gruppo.select("#cor"+i).transition()
@@ -202,18 +240,21 @@ function creaCorpo(gruppo,i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
 
         })
         .on("contextmenu", function(ev){
-            var new_x = corpo;
+            var new_x = gruppo.select("#cor"+i).attr("ry");
             var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-            var new_corpo = x;
+            var { translatY, translatX } = traslazioneCorrente(gruppo);
+
             var translat = new_x -x;
+            x += translatX;
+            var new_corpo = x;
             
             gruppo.transition()
             .ease(d3.easeLinear)
             .duration(2000) 
-            .attr("transform", "translate(" + translat +" 0)");
+            .attr("transform", "translate(" + translat +" " +  translatY+ ")");
             
             
-            ry_corpo = new_corpo/2;
+            ry_corpo = new_corpo;
             rx_corpo = ry_corpo/2;
             
             gruppo.select("#cor"+i).transition()
@@ -224,7 +265,7 @@ function creaCorpo(gruppo,i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
 
         });
 
-    }
+}
 
 function creaAli(gruppo,i,cx,cy,rx,ry,ali){ 
     x1 = cx + rx-2;
@@ -253,8 +294,6 @@ function creaAli(gruppo,i,cx,cy,rx,ry,ali){
             clickDestroAli(gruppo,i,ali,cx,cy,rx,ry);
         });
         
-
-
     x1 = cx - rx+2;
     y1 = cy - (ry/2);
     p1 = x1.toString() + "," + y1.toString();
@@ -275,26 +314,38 @@ function creaAli(gruppo,i,cx,cy,rx,ry,ali){
         .attr("id", "al1"+i)
         .attr("points", punti)
         .on("click", function(ev){
-            clickSinistroAli(gruppo,i,ali,cx,cy,rx,ry);
+            clickSinistroAli(gruppo,i);
         })
         .on("contextmenu", function(ev){
-            clickDestroAli(gruppo,i,ali,cx,cy,rx,ry);
+            clickDestroAli(gruppo,i);
         });
         
-    }
+}
 
-function clickSinistroAli(gruppo,i,ali,cx,cy,rx,ry) {
-    var new_y = ali;
+function clickSinistroAli(gruppo,i) {
+
+    var p = gruppo.select( "#al0"+i).attr("points");
+    var x1 = parseInt(p.substr(0, p.indexOf(",")));
+    var x2 = parseInt(p.split(" ")[1].substr(0, p.split(" ")[1].indexOf(",")));
+
+    
+
+    var new_y = Math.abs(x1-x2);
     var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-    var new_ali = y; 
+    var { translatY, translatX } = traslazioneCorrente(gruppo);
     var translat = new_y -y;
+    y += translatY;
+    var new_ali = y; 
     
     gruppo.transition()
         .ease(d3.easeLinear)
         .duration(2000) 
-        .attr("transform", "translate(0 "+ translat +")");
+        .attr("transform", "translate("+translatX  +" "+ translat +")");
         
-    console.log(gruppo.select("#al0"+i).attr("points"))
+    var cx =  parseInt(gruppo.select("#cor"+i).attr("cx"));
+    var cy =  parseInt(gruppo.select("#cor"+i).attr("cy"));
+    var rx =  parseInt(gruppo.select("#cor"+i).attr("rx"));
+    var ry =  parseInt(gruppo.select("#cor"+i).attr("ry"));
 
     x1 = cx + rx-2;
     y1 = cy - (ry/2);
@@ -342,17 +393,31 @@ function clickSinistroAli(gruppo,i,ali,cx,cy,rx,ry) {
     
 }
 
-function clickDestroAli(gruppo,i,ali,cx,cy,rx,ry){
-    var new_x = ali;
-    var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-    var new_ali = x; 
-    var translat = new_x -x;
+function clickDestroAli(gruppo,i){
+    var p = gruppo.select( "#al0"+i).attr("points");
+    var x1 = parseInt(p.substr(0, p.indexOf(",")));
+    var x2 = parseInt(p.split(" ")[1].substr(0, p.split(" ")[1].indexOf(",")));
+
     
+    var new_x = Math.abs(x1-x2);;
+    var x = parseInt(gruppo.select("#c"+i).attr("cx"));
+    var { translatY, translatX } = traslazioneCorrente(gruppo);
+
+    var translat = new_x -x;
+    x+=translatX
+    var new_ali = x; 
+
     gruppo.transition()
         .ease(d3.easeLinear)
         .duration(2000) 
         .attr("transform", "translate(" + translat +" 0)");
-        
+       
+       
+    var cx =  parseInt(gruppo.select("#cor"+i).attr("cx"));
+    var cy =  parseInt(gruppo.select("#cor"+i).attr("cy"));
+    var rx =  parseInt(gruppo.select("#cor"+i).attr("rx"));
+    var ry =  parseInt(gruppo.select("#cor"+i).attr("ry"));
+
 
     x1 = cx + rx-2;
     y1 = cy - (ry/2);
@@ -399,12 +464,12 @@ function clickDestroAli(gruppo,i,ali,cx,cy,rx,ry){
     
 }
 
-    //FILE DA JSON
-    d3.json(URL_file, function(data) {
+//FILE DA JSON
+d3.json(URL_file, function(data) {
     var arr = data[0];
     for(var i=0; i<data.length ; i++){
 
-        var raggio_testa =(data[i].testa)/2;
+        var raggio_testa =(data[i].testa);
         var x = data[i].x;
         var y = data[i].y;
         var l_antenne = data[i].antenne;
@@ -412,7 +477,7 @@ function clickDestroAli(gruppo,i,ali,cx,cy,rx,ry){
         var ali = data[i].ali;
         
         var corpo = data[i].corpo;
-        var ry_corpo = data[i].corpo/2;
+        var ry_corpo = data[i].corpo;
         var rx_corpo = ry_corpo/2;
         var cy_corpo = y+raggio_testa+ry_corpo;
         var cx_corpo = x;
