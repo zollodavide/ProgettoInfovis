@@ -16,8 +16,8 @@ Fai in modo che i cambi di dimensioni e di posizione delle farfalle avvengano co
 
 
 # Dati<br/>
-corpo : diametro asse y dell'elisse che forma il corpo. <br/>
-testa : diametro della testa. <br/>
+corpo : raggio asse y dell'elisse che forma il corpo. <br/>
+testa : raggio della testa. <br/>
 antenne : lunghezza delle antenne. <br/>
 ali : altezza del poligono che forma le ali. <br/>
 x: coordinata X del centro della testa. <br/>
