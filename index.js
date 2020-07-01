@@ -1,67 +1,62 @@
-var width = 2000;
-var height = 2000;
-
+var width = 2500;
+var height = 2500;
+var colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]
 var URL_file = "butterflydata.json"
 
 var svg = d3.select("body")
         .append("svg")
         .attr("width", width)
         .attr("height", height);
+
+var scaleTesta = d3.scaleLinear();
+scaleTesta.domain([0,2000]);
+scaleTesta.range([10,135]);
+
+var scaleTestaInverse = d3.scaleLinear();
+scaleTestaInverse.range([0,2000]);
+scaleTestaInverse.domain([10,135]);
+
+
+var scaleAntenne = d3.scaleLinear();
+scaleAntenne.domain([0,2000]);
+scaleAntenne.range([10,200]);
+
+var scaleAntenneInverse = d3.scaleLinear();
+scaleAntenneInverse.range([0,2000]);
+scaleAntenneInverse.domain([10,200]);
+
+
+var scaleAli = d3.scaleLinear();
+scaleAli.domain([0,2000]);
+scaleAli.range([10,190]);
+
+var scaleAliInverse = d3.scaleLinear();
+scaleAliInverse.range([0,2000]);
+scaleAliInverse.domain([10,190]);
+
+
+var scaleCorp = d3.scaleLinear();
+scaleCorp.domain([0,2000]);
+scaleCorp.range([10,250]);
+
+var scaleCorpInverse = d3.scaleLinear();
+scaleCorpInverse.range([0,1700]);
+scaleCorpInverse.domain([10,250]);
+
         
 function creaTesta(gruppo,i,x,y,raggio_testa,testa) {
-
-    var t = gruppo.append("circle")
-    .attr("id", "c"+i)
-    .attr("cx", x)
-    .attr("cy", y)
-    .attr("r", raggio_testa)
-    .on("click", function(ev){
-        var new_y = parseInt(gruppo.select("#c"+i).attr("r"));
-        var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-
-        var { translatY, translatX } = traslazioneCorrente(gruppo);
-        
-        var translat =new_y -y ;
-        y+=translatY;
-        var new_r = y; 
-        
-        gruppo.select("#c"+i).transition()
-            .ease(d3.easeLinear)
-            .duration(2000)
-            .attr("r",new_r);
-
-        gruppo.transition()
-            .ease(d3.easeLinear)
-            .duration(2000) 
-            .attr("transform", "translate(" + translatX+ " " + translat +")")
-        
-    })
-    .on("contextmenu", function(ev){
-        
-        var new_x = parseInt(gruppo.select("#c"+i).attr("r"));
-        var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-
-        var { translatY, translatX } = traslazioneCorrente(gruppo);
-        
-        var translat = new_x -x;
-        x += translatX;
-        var new_r = x; 
-        console.log(translatY)
-
-
-        gruppo.select("#c"+i).transition()
-            .ease(d3.easeLinear)
-            .duration(2000)
-            .attr("r",new_r);
-
-
-        gruppo.transition()
-            .ease(d3.easeLinear)
-            .duration(2000) 
-            .attr("transform", "translate(" + translat + " " + translatY+  ")")
-        
-            
-    });
+    gruppo.append("circle")
+        .attr("id", "c")
+        .attr("fill", "#4B0082")
+        .attr("cx", x)
+        .attr("cy", y)
+        .attr("r", raggio_testa)
+        .on("click", function(ev){ 	
+            clickSinistroTesta();     
+        })
+        .on("contextmenu", function(ev){
+            clickDestroTesta();
+        });
 }
 
 function traslazioneCorrente(gruppo) {
@@ -79,192 +74,61 @@ function traslazioneCorrente(gruppo) {
     return { translatY, translatX };
 }
 
-function clickDestroAntenne(gruppo,i,x,antenne) {
-    
-    var new_x = Math.abs(parseInt(gruppo.select("#a0"+i).attr("x2")) - parseInt(gruppo.select("#a0"+i).attr("x1")));
-    var { translatY, translatX } = traslazioneCorrente(gruppo);
 
-    var translat = new_x -x;
-    x += translatX;
-    var new_ant = x;   
-
-
-    
-    gruppo.transition()
-            .ease(d3.easeLinear)
-            .duration(2000) 
-            .attr("transform", "translate(" + translat +" " +  translatY + ")");
-    
-    var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-    var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-    var raggio_testa = parseInt(gruppo.select("#c"+i).attr("r"));
-    
-
-    x2 = new_x-(raggio_testa/2);
-    y2 = y-raggio_testa+2;
-    
-    
-    gruppo.select("#a0"+i).transition()
-    .ease(d3.easeLinear)
-    .duration(2000)
-    .attr("x1", x2-translat)
-    .attr("x2", x2-new_ant-translat)
-    .attr("y1", y2)
-    .attr("y2", y2-new_ant);
-
-    x1 = new_x + (raggio_testa/2);
-    y1 = y-raggio_testa+2;
-    
-    gruppo.select("#a1"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000)
-        .attr("x1", x1-translat)
-        .attr("x2", x1+new_ant-translat)
-        .attr("y1", y1)
-        .attr("y2", y1-new_ant);
-
-}
-        
-function clickSinistroAntenne(gruppo,i,y,antenne) {
-    var new_y = Math.abs(parseInt(gruppo.select("#a0"+i).attr("x2")) - parseInt(gruppo.select("#a0"+i).attr("x1")));
-    var { translatY, translatX } = traslazioneCorrente(gruppo);
- 
-    var translat = new_y -y;
-    y += translatY
-    var new_ant = y; 
-
-    gruppo.transition()
-            .ease(d3.easeLinear)
-            .duration(2000) 
-            .attr("transform", "translate(" + translatX +  " " + translat +")");
-    
-    var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-    var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-    var raggio_testa = parseInt(gruppo.select("#c"+i).attr("r"));
-    
-
-    x2 = x-(raggio_testa/2);
-    y2 = new_y-raggio_testa+2;
-
-
-    gruppo.select("#a0"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000)
-        .attr("x1", x2)
-        .attr("x2", x2-new_ant)
-        .attr("y1", y2-translat)
-        .attr("y2", y2-new_ant-translat);
-
-    x1 = x + (raggio_testa/2);
-    y1 = new_y-raggio_testa+2;
-
-    gruppo.select("#a1"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000)
-        .attr("x1", x1)
-        .attr("x2", x1+new_ant)
-        .attr("y1", y1-translat)
-        .attr("y2", y1-new_ant-translat);
-
-}
 
 function creaAntenne(gruppo,i,x,y,raggio_testa,antenne){
     x2 = x-(raggio_testa/2);
     y2 = y-raggio_testa+2;
     
     gruppo.append("line")
-    .attr("id", "a0"+i)
-    .attr("x1", x2)
-    .attr("x2", x2-antenne)
-    .attr("y1", y2)
-    .attr("y2", y2-antenne)
-    .attr("stroke", "black")
-        .attr("stroke-width",3)
+        .attr("id", "a0")
+        .attr("x1", x2)
+        .attr("x2", x2-antenne)
+        .attr("y1", y2)
+        .attr("y2", y2-antenne)
+        .attr("stroke", "#1c4966")
+        .attr("stroke-width",6)
         .on("click", function(ev){
-            clickSinistroAntenne(gruppo,i,y,antenne);
+            clickSinistroAntenne();
         })
         .on("contextmenu", function(ev){
-            clickDestroAntenne(gruppo,i,x,antenne);
+            clickDestroAntenne();
         });
 
-        x1 = x + (raggio_testa/2);
-        y1 = y-raggio_testa+2;
+    x1 = x + (raggio_testa/2);
+    y1 = y-raggio_testa+2;
         
-        gruppo.append("line")
-        .attr("id", "a1"+i)
+    gruppo.append("line")
+        .attr("id", "a1")
         .attr("x1", x1)
         .attr("x2", x1+antenne)
-        .attr("y1", y1)
+        .attr("y1", y1)      
         .attr("y2", y1-antenne)
-        .attr("stroke", "black")
-        .attr("stroke-width",3)
+        .attr("stroke", "#1c4966")
+        .attr("stroke-width",6)
         .on("click", function(ev){
-            clickSinistroAntenne(gruppo,i,y,antenne);
+            clickSinistroAntenne();
         })
         .on("contextmenu", function(ev){
-            clickDestroAntenne(gruppo,i,x,antenne);
+            clickDestroAntenne();
         });
 }
     
 function creaCorpo(gruppo,i,x,y,raggio_testa,rx,ry,cx,cy,corpo){
     
     gruppo.append("ellipse")
-    .attr("id", "cor"+i)
+    .attr("id", "cor")
     .attr("cx", cx)
     .attr("cy", cy)
     .attr("rx", rx)
     .attr("ry", ry)
+    .attr("fill", "purple")
     .on("click", function(ev){
-        var new_y = gruppo.select("#cor"+i).attr("ry");
-        var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-        var { translatY, translatX } = traslazioneCorrente(gruppo);
-
-        var translat = new_y -y; 
-        y += translatY;
-        var new_corpo = y;
-        
-        gruppo.transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("transform", "translate(" + translatX + " "+ translat +")")
-        
-        
-        ry_corpo = new_corpo;
-        rx_corpo = ry_corpo/2;
-        
-        gruppo.select("#cor"+i).transition()
-        .ease(d3.easeLinear)
-            .duration(2000)
-            .attr("rx",rx_corpo)
-            .attr("ry",ry_corpo);
-
-        })
-        .on("contextmenu", function(ev){
-            var new_x = gruppo.select("#cor"+i).attr("ry");
-            var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-            var { translatY, translatX } = traslazioneCorrente(gruppo);
-
-            var translat = new_x -x;
-            x += translatX;
-            var new_corpo = x;
-            
-            gruppo.transition()
-            .ease(d3.easeLinear)
-            .duration(2000) 
-            .attr("transform", "translate(" + translat +" " +  translatY+ ")");
-            
-            
-            ry_corpo = new_corpo;
-            rx_corpo = ry_corpo/2;
-            
-            gruppo.select("#cor"+i).transition()
-            .ease(d3.easeLinear)
-                .duration(2000)
-                .attr("rx",rx_corpo)
-                .attr("ry",ry_corpo);
-
-        });
-
+        clickSinistroCorpo();
+    })
+    .on("contextmenu", function(ev){
+        clickDestroCorpo();
+    });
 }
 
 function creaAli(gruppo,i,cx,cy,rx,ry,ali){ 
@@ -285,13 +149,14 @@ function creaAli(gruppo,i,cx,cy,rx,ry,ali){
     p3 = x3.toString() + "," + y3.toString();
     punti = p1 + " " + p2 + " " + p3+ " " + p4;
     gruppo.append("polygon")
-        .attr("id", "al0"+i)
+        .attr("id", "al0")
         .attr("points", punti)
+        .attr("fill", colors[i])
         .on("click", function(ev){
-            clickSinistroAli(gruppo,i,ali,cx,cy,rx,ry);
+            clickSinistroAli();
         })
         .on("contextmenu", function(ev){
-            clickDestroAli(gruppo,i,ali,cx,cy,rx,ry);
+            clickDestroAli();
         });
         
     x1 = cx - rx+2;
@@ -311,157 +176,16 @@ function creaAli(gruppo,i,cx,cy,rx,ry,ali){
     p3 = x3.toString() + "," + y3.toString();
     punti = p1 + " " + p2 + " " + p3+ " " + p4;
     gruppo.append("polygon")
-        .attr("id", "al1"+i)
-        .attr("points", punti)
+        .attr("id", "al1")
+        .attr("points", punti)       
+        .attr("fill", colors[i])
         .on("click", function(ev){
-            clickSinistroAli(gruppo,i);
+            clickSinistroAli();
         })
         .on("contextmenu", function(ev){
-            clickDestroAli(gruppo,i);
+            clickDestroAli();
         });
         
-}
-
-function clickSinistroAli(gruppo,i) {
-
-    var p = gruppo.select( "#al0"+i).attr("points");
-    var x1 = parseInt(p.substr(0, p.indexOf(",")));
-    var x2 = parseInt(p.split(" ")[1].substr(0, p.split(" ")[1].indexOf(",")));
-
-    
-
-    var new_y = Math.abs(x1-x2);
-    var y = parseInt(gruppo.select("#c"+i).attr("cy"));
-    var { translatY, translatX } = traslazioneCorrente(gruppo);
-    var translat = new_y -y;
-    y += translatY;
-    var new_ali = y; 
-    
-    gruppo.transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("transform", "translate("+translatX  +" "+ translat +")");
-        
-    var cx =  parseInt(gruppo.select("#cor"+i).attr("cx"));
-    var cy =  parseInt(gruppo.select("#cor"+i).attr("cy"));
-    var rx =  parseInt(gruppo.select("#cor"+i).attr("rx"));
-    var ry =  parseInt(gruppo.select("#cor"+i).attr("ry"));
-
-    x1 = cx + rx-2;
-    y1 = cy - (ry/2);
-    p1 = x1.toString() + "," + y1.toString();
-    
-    x2 = x1 + new_ali;
-    y2 = y1 -new_ali;
-    p2 = x2.toString() + "," + y2.toString();
-    
-    x4 = cx + rx-2;
-    y4 = cy + (ry/2);
-    p4 = x4.toString() + "," + y4.toString();
-    
-    x3 = x1 +new_ali;
-    y3 = y4 +new_ali;
-    p3 = x3.toString() + "," + y3.toString();
-    punti = p1 + " " + p2 + " " + p3+ " " + p4;
-    gruppo.select( "#al0"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("points", punti)
-
-    x1 = cx - rx+2;
-    y1 = cy - (ry/2);
-    p1 = x1.toString() + "," + y1.toString();
-
-    x2 = x1 - new_ali;
-    y2 = y1 -new_ali;
-    p2 = x2.toString() + "," + y2.toString();
-    
-    x4 = cx - rx+2;
-    y4 = cy + (ry/2);
-    p4 = x4.toString() + "," + y4.toString();
-    
-    x3 = x1 -new_ali;
-    y3 = y4 +new_ali;
-    p3 = x3.toString() + "," + y3.toString();
-    punti = p1 + " " + p2 + " " + p3+ " " + p4;
-    gruppo.select( "#al1"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("points", punti)
-
-
-    
-}
-
-function clickDestroAli(gruppo,i){
-    var p = gruppo.select( "#al0"+i).attr("points");
-    var x1 = parseInt(p.substr(0, p.indexOf(",")));
-    var x2 = parseInt(p.split(" ")[1].substr(0, p.split(" ")[1].indexOf(",")));
-
-    
-    var new_x = Math.abs(x1-x2);;
-    var x = parseInt(gruppo.select("#c"+i).attr("cx"));
-    var { translatY, translatX } = traslazioneCorrente(gruppo);
-
-    var translat = new_x -x;
-    x+=translatX
-    var new_ali = x; 
-
-    gruppo.transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("transform", "translate(" + translat +" 0)");
-       
-       
-    var cx =  parseInt(gruppo.select("#cor"+i).attr("cx"));
-    var cy =  parseInt(gruppo.select("#cor"+i).attr("cy"));
-    var rx =  parseInt(gruppo.select("#cor"+i).attr("rx"));
-    var ry =  parseInt(gruppo.select("#cor"+i).attr("ry"));
-
-
-    x1 = cx + rx-2;
-    y1 = cy - (ry/2);
-    p1 = x1.toString() + "," + y1.toString();
-    
-    x2 = x1 + new_ali;
-    y2 = y1 -new_ali;
-    p2 = x2.toString() + "," + y2.toString();
-    
-    x4 = cx + rx-2;
-    y4 = cy + (ry/2);
-    p4 = x4.toString() + "," + y4.toString();
-    
-    x3 = x1 +new_ali;
-    y3 = y4 +new_ali;
-    p3 = x3.toString() + "," + y3.toString();
-    punti = p1 + " " + p2 + " " + p3+ " " + p4;
-    gruppo.select( "#al0"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("points", punti)
-
-    x1 = cx - rx+2;
-    y1 = cy - (ry/2);
-    p1 = x1.toString() + "," + y1.toString();
-
-    x2 = x1 - new_ali;
-    y2 = y1 -new_ali;
-    p2 = x2.toString() + "," + y2.toString();
-    
-    x4 = cx - rx+2;
-    y4 = cy + (ry/2);
-    p4 = x4.toString() + "," + y4.toString();
-    
-    x3 = x1 -new_ali;
-    y3 = y4 +new_ali;
-    p3 = x3.toString() + "," + y3.toString();
-    punti = p1 + " " + p2 + " " + p3+ " " + p4;
-    gruppo.select( "#al1"+i).transition()
-        .ease(d3.easeLinear)
-        .duration(2000) 
-        .attr("points", punti)
-
-    
 }
 
 //FILE DA JSON
@@ -482,10 +206,368 @@ d3.json(URL_file, function(data) {
         var cy_corpo = y+raggio_testa+ry_corpo;
         var cx_corpo = x;
 
-        var gruppo = svg.append("g")
+        var gruppo = svg.append("g").attr("id","f"+i);
+
         creaTesta(gruppo,i,x,y,raggio_testa,data[i].testa);
         creaAntenne(gruppo,i,x,y,raggio_testa,l_antenne);
         creaCorpo(gruppo,i,x,y,raggio_testa,rx_corpo,ry_corpo,cx_corpo,cy_corpo,corpo)
         creaAli(gruppo,i,cx_corpo,cy_corpo,rx_corpo,ry_corpo,ali)
     }
 });
+
+function clickDestroAli() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var ali = data[i].ali;
+            var x = data[i].x;
+
+            var gruppo = svg.select(id);
+
+            gruppo.transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(" + parseInt(scaleAliInverse(ali)-x) +" 0)");
+
+            var cx =  parseInt(gruppo.select("#cor").attr("cx"));
+            var cy =  parseInt(gruppo.select("#cor").attr("cy"));
+            var rx =  parseInt(gruppo.select("#cor").attr("rx"));
+            var ry =  parseInt(gruppo.select("#cor").attr("ry"));
+            var new_ali = scaleAli(x)
+
+            var x1 = cx + rx-2;
+            var y1 = cy - (ry/2);
+            var p1 = x1.toString() + "," + y1.toString();
+            
+            var x2 = x1 + new_ali;
+            var y2 = y1 -new_ali;
+            var p2 = x2.toString() + "," + y2.toString();
+            
+            var x4 = cx + rx-2;
+            var y4 = cy + (ry/2);
+            var p4 = x4.toString() + "," + y4.toString();
+            
+            var x3 = x1 +new_ali;
+            var y3 = y4 +new_ali;
+            var p3 = x3.toString() + "," + y3.toString();
+            var punti = p1 + " " + p2 + " " + p3+ " " + p4;
+            console.log(punti)
+            
+            gruppo.select("#al0")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("points", punti)
+
+
+            x1 = cx - rx+2;
+            y1 = cy - (ry/2);
+            p1 = x1.toString() + "," + y1.toString();
+
+            x2 = x1 - new_ali;
+            y2 = y1 -new_ali;
+            p2 = x2.toString() + "," + y2.toString();
+            
+            x4 = cx - rx+2;
+            y4 = cy + (ry/2);
+            p4 = x4.toString() + "," + y4.toString();
+            
+            x3 = x1 -new_ali;
+            y3 = y4 +new_ali;
+            p3 = x3.toString() + "," + y3.toString();
+            punti = p1 + " " + p2 + " " + p3+ " " + p4;
+            gruppo.select("#al1")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("points", punti)
+
+        }
+    });
+}
+
+
+function clickSinistroAli() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var ali = data[i].ali;
+            var y = data[i].y;
+
+            var gruppo = svg.select(id);
+
+            gruppo.transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(0 " + parseInt(scaleAliInverse(ali)-y) +")");
+            
+            var cx =  parseInt(gruppo.select("#cor").attr("cx"));
+            var cy =  parseInt(gruppo.select("#cor").attr("cy"));
+            var rx =  parseInt(gruppo.select("#cor").attr("rx"));
+            var ry =  parseInt(gruppo.select("#cor").attr("ry"));
+            var new_ali = scaleAli(y)
+
+            var x1 = cx + rx-2;
+            var y1 = cy - (ry/2);
+            var p1 = x1.toString() + "," + y1.toString();
+            
+            var x2 = x1 + new_ali;
+            var y2 = y1 -new_ali;
+            var p2 = x2.toString() + "," + y2.toString();
+            
+            var x4 = cx + rx-2;
+            var y4 = cy + (ry/2);
+            var p4 = x4.toString() + "," + y4.toString();
+            
+            var x3 = x1 +new_ali;
+            var y3 = y4 +new_ali;
+            var p3 = x3.toString() + "," + y3.toString();
+            var punti = p1 + " " + p2 + " " + p3+ " " + p4;
+            console.log(punti)
+            
+            gruppo.select("#al0")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("points", punti)
+
+
+            x1 = cx - rx+2;
+            y1 = cy - (ry/2);
+            p1 = x1.toString() + "," + y1.toString();
+
+            x2 = x1 - new_ali;
+            y2 = y1 -new_ali;
+            p2 = x2.toString() + "," + y2.toString();
+            
+            x4 = cx - rx+2;
+            y4 = cy + (ry/2);
+            p4 = x4.toString() + "," + y4.toString();
+            
+            x3 = x1 -new_ali;
+            y3 = y4 +new_ali;
+            p3 = x3.toString() + "," + y3.toString();
+            punti = p1 + " " + p2 + " " + p3+ " " + p4;
+            gruppo.select("#al1")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("points", punti)
+
+        }
+    });
+}
+
+function clickSinistroCorpo() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var ry_corpo = data[i].corpo;
+            var y = data[i].y;
+
+            svg.select(id)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(0 " + parseInt(scaleCorpInverse(ry_corpo)-y) +")");
+
+            svg.select(id)
+                .select("#cor")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("ry", scaleCorp(y))
+                .attr("rx", scaleCorp(y)/2); 
+
+        }
+    });
+}
+
+
+
+function clickDestroCorpo() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var ry_corpo = data[i].corpo;
+            var x = data[i].x;
+
+            svg.select(id)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(" + parseInt(scaleCorpInverse(ry_corpo)-x) +" 0)");
+        
+            svg.select(id)
+                .select("#cor")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("ry", scaleCorp(x))
+                .attr("rx", scaleCorp(x)/2); 
+
+        }
+    });
+}
+
+
+function clickDestroTesta() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var testa = data[i].testa;
+            var x = data[i].x;
+
+            svg.select(id)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(" + parseInt(scaleTestaInverse(testa)-x) +" 0)");
+        
+            svg.select(id)
+                .select("#c")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("r", scaleTesta(x)); 
+        }
+    });
+}
+
+function clickSinistroTesta() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var testa = data[i].testa;
+            var y = data[i].y;
+
+            svg.select(id)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(0 " + parseInt(scaleTestaInverse(testa)-y) +")");
+        
+            svg.select(id)
+                .select("#c")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("r", scaleTesta(y)); 
+        }
+    });
+}
+
+
+
+function clickDestroAntenne() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var antenne = data[i].antenne;
+            var x = data[i].x;
+
+            svg.select(id)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(" + parseInt(scaleAntenneInverse(antenne)-x) +" 0)");
+
+            var { translatY, translatX } = traslazioneCorrente(svg.select(id));
+
+            var x_corrente = data[i].x;
+            var y_corrente = data[i].y;
+            var new_antenne = scaleAntenne(x);
+            var raggio_testa_corrente = svg.select(id).select("#c").attr("r")
+            
+
+            x2 = x_corrente-(raggio_testa_corrente/2);
+            y2 = y_corrente-raggio_testa_corrente+2;
+
+        
+            svg.select(id)
+                .select("#a0")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x2)
+                .attr("x2", x2-new_antenne)
+                .attr("y1", y2)
+                .attr("y2", y2-new_antenne);
+
+            
+            x1 = x_corrente + (raggio_testa_corrente/2);
+            y1 = y_corrente-raggio_testa_corrente+2;
+
+            svg.select(id)
+                .select("#a1")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x1)
+                .attr("x2", x1+new_antenne)
+                .attr("y1", y1)
+                .attr("y2", y1-new_antenne)
+
+
+        }
+    });
+
+}
+
+
+function clickSinistroAntenne() {
+    d3.json(URL_file, function(data) {
+        for (var i in data) {
+            var id = "#f"+i;
+            var antenne = data[i].antenne;
+            var y = data[i].y;
+
+            svg.select(id)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000) 
+                .attr("transform", "translate(0 " + parseInt(scaleAntenneInverse(antenne)-y) +")");
+
+            var { translatY, translatX } = traslazioneCorrente(svg.select(id));
+
+            var x_corrente = parseInt(data[i].x + translatX);
+            var y_corrente = parseInt(data[i].y + translatY);
+            var new_antenne = scaleAntenne(y);
+            var raggio_testa_corrente = svg.select(id).select("#c").attr("r")
+            
+
+            x2 = x_corrente-(raggio_testa_corrente/2);
+            y2 = y_corrente-raggio_testa_corrente+2;
+
+        
+            svg.select(id)
+                .select("#a0")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x2)
+                .attr("x2", x2-new_antenne)
+                .attr("y1", y2)
+                .attr("y2", y2-new_antenne);
+
+            
+            x1 = x_corrente + (raggio_testa_corrente/2);
+            y1 = y_corrente-raggio_testa_corrente+2;
+
+            svg.select(id)
+                .select("#a1")
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(2000)
+                .attr("x1", x1)
+                .attr("x2", x1+new_antenne)
+                .attr("y1", y1)
+                .attr("y2", y1-new_antenne)
+
+        }
+    });
+
+}
+
+
+
